@@ -49,14 +49,15 @@ let run () =
     let data = System.IO.File.ReadAllText("/Users/willsam100/Desktop/list 4.html")
     let body = HtmlDocument.Parse(data) //|> Async.RunSynchronously
 
-    let links = body.Descendants ["h1"]
+    let links = body.Descendants ["p"]
                 //|> Seq.choose (fun x -> x.TryGetAttribute "href" |> Option.map(fun y -> y.Value(), x))
                 |> Seq.map (fun (x) -> x.InnerText())
-                |> Seq.map (fun x -> x = "Sorry, this classified has expired.")
+                |> Seq.map (fun x -> x = "This listing was withdrawn by the administrator")
                 |> Seq.fold (fun x y -> x || y) false
     //            |> Seq.filter (fun x -> x.Contains("?id="))
     //            |> Seq.map (fun x -> x.Replace("/Browse/Listing.aspx?id=", ""))
 
-    links |> Seq.iter (printfn "%A")
+    //links |> Seq.iter (printfn "%A")
+    printfn "Was removed: %b" links
 
 run ()

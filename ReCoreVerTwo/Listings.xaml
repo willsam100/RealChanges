@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ReCoreVerTwo.Listings" xmlns:local="clr-namespace:ReCoreVerTwo;assembly=ReCoreVerTwo" xmlns:behaviors="clr-namespace:Corcav.Behaviors;assembly=Corcav.Behaviors" Title="Listings">
+<ContentPage.Resources>
+	<ResourceDictionary>
+		<Style TargetType="Label">
+			<Setter Property="BackgroundColor" Value="White" />
+			<Setter Property="TextColor" Value="Black" />
+		</Style>
+		<Style TargetType="StackLayout">
+			<Setter Property="BackgroundColor" Value="White" />
+		</Style>
+	</ResourceDictionary>
+</ContentPage.Resources>
+<ContentPage.ToolbarItems>
+	<ToolbarItem Icon="about" Command="{Binding About}"/>
+	<ToolbarItem Text="{Binding toolbarShow}" Command="{Binding ShowRemoved}"/>
+	<ToolbarItem Icon="add" Command="{Binding AddListing}"/>
+	
+</ContentPage.ToolbarItems>
+<ListView Margin="0,0,0,0" ItemsSource="{Binding Listings}" HasUnevenRows="True" 
+		  IsPullToRefreshEnabled="True" SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}}"
+		  RefreshCommand="{Binding Refresh}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}" BackgroundColor="White">
+  	<behaviors:Interaction.Behaviors>
+		<behaviors:BehaviorCollection>
+			<behaviors:EventToCommand EventName="ItemTapped" Command="{Binding ItemTapped}" PassEventArgument="true"/>
+		</behaviors:BehaviorCollection>
+	</behaviors:Interaction.Behaviors>
+	<ListView.ItemTemplate>
+		<DataTemplate>
+			<ViewCell>
+	         	<ViewCell.ContextActions>
+            		<MenuItem Command="{Binding Binding.OnDelete}" Text="Delete" IsDestructive="True" />
+         		</ViewCell.ContextActions>
+<!--				<RelativeLayout HeightRequest="100" MinimumHeightRequest="100" >-->
+					<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100" 
+							     RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}"
+	        				     RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+								 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}" >
+						<Image Margin="0,2,0,0" Source="{Binding Binding.Image}" BackgroundColor="White" HorizontalOptions="Start" 
+							   VerticalOptions="Start" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" Aspect="Fill"
+								 RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}"
+	        				     RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+								 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}" />
+						<StackLayout Orientation="Vertical">
+							<Label Text="{Binding Binding.Title}" FontSize="15" />
+							<Label Text="{Binding Binding.Price}" FontSize="14" />
+							<Label Text="{Binding Binding.Views}" FontSize="14" HorizontalOptions="Start" />
+<!--							<Label Margin="-150,-90,0,0" Text="asdfasdfadf" TextColor="#FFD180" BackgroundColor="#FFD180" Rotation="45" Opacity="25" FontSize="30" HorizontalOptions="EndAndExpand" />-->
+					</StackLayout>
+					</StackLayout>
+<!--				</RelativeLayout>-->
+			</ViewCell>
+		</DataTemplate>
+	</ListView.ItemTemplate>
+</ListView>
+</ContentPage>

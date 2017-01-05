@@ -28,7 +28,7 @@ let migrations =
 
 let runMigration path provider = 
 
-  SQLitePCL.raw.SetProvider(provider)
+  //SQLitePCL.raw.SetProvider(provider)
   let connection = new SQLiteConnection(Path.Combine(path, dbName), false)
   connection.CreateTable<Listing>() |> ignore
   connection.CreateTable<ListingItem>() |> ignore

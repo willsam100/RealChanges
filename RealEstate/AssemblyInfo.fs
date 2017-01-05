@@ -1,8 +1,8 @@
-﻿namespace RealEstate
+﻿namespace Re.Core
 open System.Reflection
 open System.Runtime.CompilerServices
 
-[<assembly: AssemblyTitle("RealEstate")>]
+[<assembly: AssemblyTitle("Re.Core")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]

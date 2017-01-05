@@ -111,7 +111,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RealEstate\RealEstate.fsproj">
       <Project>{12D1965C-D94B-45E4-950E-53AE1A0562B0}</Project>
-      <Name>RealEstate</Name>
+      <Name>Re.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

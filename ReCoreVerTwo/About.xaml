@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ReCoreVerTwo.About" xmlns:local="clr-namespace:ReCoreVerTwo;assembly=ReCoreVerTwo">
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Style TargetType="Label">
+				<Setter Property="BackgroundColor" Value="White" />
+				<Setter Property="TextColor" Value="Black" />
+			</Style>
+			<Style TargetType="StackLayout">
+				<Setter Property="BackgroundColor" Value="White" />
+			</Style>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100">
+		<StackLayout Orientation="Vertical">
+			<Label Text="Created by Sam Williams" FontSize="14" />
+			<Label Text="Icons supplied by: https://icons8.com/web-app/5572/Home" FontSize="14" />
+		</StackLayout>
+	</StackLayout>
+</ContentPage>
