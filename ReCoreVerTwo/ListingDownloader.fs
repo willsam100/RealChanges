@@ -137,7 +137,7 @@ let AsyncQueryListing (logger: string -> unit) listingId =
 
 let refresh logger (listingItems: FullListing list) =
 
-    let IdsToRemove = listingItems |> List.filter (fun x -> x.Listing.Price = "Sold") |> List.map (fun x -> x.Listing.ListingId)
+    let IdsToRemove = listingItems |> List.filter (fun x -> x.Listing.Price = "Sold" || x.WasRemovedOrSold = true ) |> List.map (fun x -> x.Listing.ListingId)
 
     let updateListings = 
         listingItems 

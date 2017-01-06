@@ -157,7 +157,7 @@ let listingsComponent source (model : ISignal<Model>) =
                 Binding = listingChangesComponent }, model.Listing.ListingId )
                 
     model 
-    |> Signal.map (fun x -> if x.ShowRemovedListings then "Hide Sold" else "Hide Sold")
+    |> Signal.map (fun x -> if x.ShowRemovedListings then "Hide Sold" else "Show Sold")
     |> Binding.toView source "toolbarShow"
 
     [

@@ -170,7 +170,7 @@ type StateManagement (navPage: INavigation, loadItems: unit -> unit, saveListing
 
     let initialModel = {
         Items = []
-        ShowRemovedListings = true 
+        ShowRemovedListings = false 
         IsRefreshing = false
         AddListingModel = None
         ListingChanges = None

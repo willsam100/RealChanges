@@ -31,24 +31,22 @@
 	         	<ViewCell.ContextActions>
             		<MenuItem Command="{Binding Binding.OnDelete}" Text="Delete" IsDestructive="True" />
          		</ViewCell.ContextActions>
-<!--				<RelativeLayout HeightRequest="100" MinimumHeightRequest="100" >-->
-					<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100" 
-							     RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}"
-	        				     RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
-								 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}" >
-						<Image Margin="0,2,0,0" Source="{Binding Binding.Image}" BackgroundColor="White" HorizontalOptions="Start" 
-							   VerticalOptions="Start" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" Aspect="Fill"
-								 RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}"
-	        				     RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
-								 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1,Constant=0}" />
+					<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100">
+						<RelativeLayout HeightRequest="100" MinimumHeightRequest="100" WidthRequest="150">
+							<Image x:Name="image" Margin="0,2,0,0" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" Source="{Binding Binding.Image}" BackgroundColor="White" HorizontalOptions="Start"
+								   VerticalOptions="Start" Aspect="Fill" />
+						    <BoxView Color="#FFD180" Rotation="-45" Opacity=".85"
+							         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView, ElementName=image,Property=Y,Factor=1,Constant=0}"
+							         RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToView, ElementName=image,Property=X,Factor=1,Constant=00}"
+							         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
+	        						 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.5,Constant=0}" />
+					   </RelativeLayout>
 						<StackLayout Orientation="Vertical">
 							<Label Text="{Binding Binding.Title}" FontSize="15" />
 							<Label Text="{Binding Binding.Price}" FontSize="14" />
 							<Label Text="{Binding Binding.Views}" FontSize="14" HorizontalOptions="Start" />
-<!--							<Label Margin="-150,-90,0,0" Text="asdfasdfadf" TextColor="#FFD180" BackgroundColor="#FFD180" Rotation="45" Opacity="25" FontSize="30" HorizontalOptions="EndAndExpand" />-->
+						</StackLayout>
 					</StackLayout>
-					</StackLayout>
-<!--				</RelativeLayout>-->
 			</ViewCell>
 		</DataTemplate>
 	</ListView.ItemTemplate>
