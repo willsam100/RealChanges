@@ -70,7 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Script.fsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\code\Gjallarhorn\src\Gjallarhorn\Gjallarhorn.fsproj">

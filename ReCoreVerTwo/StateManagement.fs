@@ -26,7 +26,7 @@ type Model = {
     ShowRemovedListings: bool
     IsRefreshing: bool
     AddListingModel: AddListingModel option
-    ListingChanges: int option
+    ListingChanges: ListingId option
     CurrentPage: CurrentPage
 }
 
@@ -35,10 +35,10 @@ type Update =
     | ItemSaved
     | RefrehedItems of FullListing list
     | ItemValidated of FullListing option
-    | DeletedListing of int
+    | DeletedListing of ListingId
     
 type NavigationDetails = {
-    Page: Page
+    Page: unit -> Page
     Navigation: INavigation -> Page -> Task
     Binding: Component<Model,Msg>
 }
@@ -47,8 +47,8 @@ and RequestAction =
     | RequstLoad
     | RequstRefresh
     | AddListingMessage of string
-    | SetListingDetail of (NavigationDetails * int)
-    | DeleteListing of int
+    | SetListingDetail of (NavigationDetails * ListingId)
+    | DeleteListing of ListingId
     | ToggleShowRemoved 
 
 and ChangePage = 
@@ -74,7 +74,7 @@ module Option =
             
             
 
-type StateManagement (navPage: INavigation, loadItems: unit -> unit, saveListing, validateListing, refreshListings, deleteListing) as this =
+type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveListing, validateListing, refreshListings, deleteListing) as this =
 
     let listingValidated item (current: Model) = 
         Debug.WriteLine <| sprintf "Listing has been validated"
@@ -115,13 +115,13 @@ type StateManagement (navPage: INavigation, loadItems: unit -> unit, saveListing
         | ItemSaved -> {current with AddListingModel = None}
         | ItemValidated x -> listingValidated x current
         | DeletedListing listingId -> 
-            Debug.WriteLine <| sprintf "Listing deleted: %d" listingId
+            Debug.WriteLine <| sprintf "Listing deleted: %A" listingId
             {current with Items = current.Items |> List.filter (fun x -> x.Listing.ListingId <> listingId) }
             
 
     let processPageChange navigationDetails = 
         let app = Framework.application this.ToSignal (fun () -> ()) this.Update navigationDetails.Binding
-        Framework.changePage (navigationDetails.Navigation navPage) app navigationDetails.Page
+        Framework.changePage (navigationDetails.Navigation navPage.Navigation) app (navigationDetails.Page ())
     
     let handleChangePage cp current = 
         match cp with 

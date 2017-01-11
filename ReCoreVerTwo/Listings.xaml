@@ -13,12 +13,12 @@
 </ContentPage.Resources>
 <ContentPage.ToolbarItems>
 	<ToolbarItem Icon="about" Command="{Binding About}"/>
-	<ToolbarItem Text="{Binding toolbarShow}" Command="{Binding ShowRemoved}"/>
 	<ToolbarItem Icon="add" Command="{Binding AddListing}"/>
+<!--	<ToolbarItem Text="{Binding toolbarShow}" Command="{Binding ShowRemoved}"/>-->
 	
 </ContentPage.ToolbarItems>
 <ListView Margin="0,0,0,0" ItemsSource="{Binding Listings}" HasUnevenRows="True" 
-		  IsPullToRefreshEnabled="True" SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}}"
+		  IsPullToRefreshEnabled="True"
 		  RefreshCommand="{Binding Refresh}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}" BackgroundColor="White">
   	<behaviors:Interaction.Behaviors>
 		<behaviors:BehaviorCollection>
@@ -31,22 +31,25 @@
 	         	<ViewCell.ContextActions>
             		<MenuItem Command="{Binding Binding.OnDelete}" Text="Delete" IsDestructive="True" />
          		</ViewCell.ContextActions>
-					<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100">
-						<RelativeLayout HeightRequest="100" MinimumHeightRequest="100" WidthRequest="150">
-							<Image x:Name="image" Margin="0,2,0,0" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" Source="{Binding Binding.Image}" BackgroundColor="White" HorizontalOptions="Start"
+					<RelativeLayout HeightRequest="100" MinimumHeightRequest="100">
+					<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100" 
+								 HorizontalOptions="FillAndExpand" x:Name="anchorView">
+							<Image Margin="0,2,0,0" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" 
+								   Source="{Binding Binding.Image}" BackgroundColor="White" HorizontalOptions="Start"
 								   VerticalOptions="Start" Aspect="Fill" />
-						    <BoxView Color="#FFD180" Rotation="-45" Opacity=".85"
-							         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView, ElementName=image,Property=Y,Factor=1,Constant=0}"
-							         RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToView, ElementName=image,Property=X,Factor=1,Constant=00}"
-							         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1,Constant=0}"
-	        						 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.5,Constant=0}" />
-					   </RelativeLayout>
-						<StackLayout Orientation="Vertical">
-							<Label Text="{Binding Binding.Title}" FontSize="15" />
-							<Label Text="{Binding Binding.Price}" FontSize="14" />
-							<Label Text="{Binding Binding.Views}" FontSize="14" HorizontalOptions="Start" />
+						<StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand">
+							<Label Text="{Binding Binding.Title}" FontSize="15"/>
+							<Label Text="{Binding Binding.Price}" FontSize="14"/>
+							<Label Text="{Binding Binding.Views}" FontSize="14"/>
 						</StackLayout>
 					</StackLayout>
+				    <BoxView Color="#FFD180" Rotation="-45" Opacity=".90" IsVisible="{Binding Binding.Changed}"
+					         RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Y,Factor=0.5,Constant=0}"
+					         RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToView, ElementName=anchorView, 
+														  Property=Width, Factor=0, Constant=-210}"
+					         RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0,Constant=400}"
+    						 RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.5,Constant=0}" />
+		    		</RelativeLayout>
 			</ViewCell>
 		</DataTemplate>
 	</ListView.ItemTemplate>

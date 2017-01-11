@@ -14,25 +14,25 @@ let aboutComponet source (model: ISignal<Model>) =
 let addListing source (model: ISignal<Model>) = 
     model 
     |> Signal.map (fun x -> x.AddListingModel)
-    |> Signal.map (fun x -> x |> Option.map (fun y -> y.OutputMessage))
-    |> Signal.map (fun x -> defaultArg x "")
+    |> Signal.map (fun x -> x |> Option.map (fun y -> y.OutputMessage) |> defaultArg <| "")
+    |> (fun x -> Debug.WriteLine <| sprintf "Output: %A" x.Value; x)
     |> Binding.toView source "Output"
                             
-    Signal.constant "Add Trademe Listing" |> Binding.toView source "Title" 
+    Signal.constant "Add Trademe Listing!" |> Binding.toView source "Title" 
     
     model 
-    |> Signal.map (fun x -> match x.AddListingModel with
-                              | None -> ""
-                              | Some x -> Debug.WriteLine <| sprintf "AddListingModel: %A" x 
-                                          if x.ItemAdded then "" else x.EntryText)
-    |> Binding.toView source "EntryText"
+    |> Signal.map (fun x -> x.AddListingModel 
+                            |> Option.map (fun y -> if y.ItemAdded then "" else y.EntryText)
+                            |> defaultArg <| "" )
+    |> Binding.toView source "ListingText"
         
     let isNotLoadingContent = 
         model |> Signal.map (fun x -> match x.AddListingModel with
                                         | None -> true
                                         | Some x -> not x.IsValidatingItem )
     let isOnAddListingPage = 
-        model |> Signal.map (fun x -> x.CurrentPage = AddListingPage)
+        model |> Signal.map (fun x -> let cp = x.CurrentPage 
+                                      cp = AddListingPage)
     let canExecute = Signal.map2 (&&) isNotLoadingContent isOnAddListingPage
 
     Debug.WriteLine <| sprintf "Not Loading %b, page %A " isNotLoadingContent.Value model.Value.CurrentPage
@@ -51,9 +51,9 @@ let listingChangesComponent source (model: ISignal<Model>) =
     let listingId = 
         model 
         |> Signal.map (fun x -> x.ListingChanges )
-        |> Signal.map (fun x -> defaultArg x -1)
+        |> Signal.map (fun x -> defaultArg x (ListingDownloader.TradeMe ""))
     
-    Debug.WriteLine <| sprintf "ListingId %d" listingId.Value 
+    Debug.WriteLine <| sprintf "ListingId %A" listingId.Value 
     
     let listings  = 
         model
@@ -76,7 +76,11 @@ let listingChangesComponent source (model: ISignal<Model>) =
     let openInBrowser () = 
         Device.OpenUri(new Uri(ListingDownloader.listingIdToLink listingId.Value))
     
-    listingId |> Signal.map (fun x -> sprintf "Changes for listing: # %d" x) |> Binding.toView source "Title"
+    listingId 
+    |> Signal.map (ListingDownloader.listingIdToString) 
+    |> Signal.map (fun x -> sprintf "Changes for listing: %s" x) 
+    |> Binding.toView source "Title"
+    
     source |> Binding.createCommandParam "ViewListing" |> Observable.add openInBrowser
 
     [
@@ -85,8 +89,7 @@ let listingChangesComponent source (model: ISignal<Model>) =
 
 let listingChangesCell (canExecute: ISignal<bool>) source (model : ISignal<ListingDownloader.FullListing>) = 
                     
-    let showAsUpdated: DateTime -> string = 
-        fun d -> (d > (DateTime.Now.AddHours (-6.))) |> (fun x -> if x then "*" else "")
+    let showAsUpdated: DateTime -> bool = fun d -> (d > (DateTime.Now.AddHours (-24.)))
                     
     let urlToString: Uri option -> string = fun image -> defaultArg (image |> Option.map (fun x -> x.AbsoluteUri)) ""
 
@@ -94,14 +97,14 @@ let listingChangesCell (canExecute: ISignal<bool>) source (model : ISignal<Listi
     model |> Signal.map (fun v -> v.Listing.Price)                 |> Binding.toView source "Price"
     model |> Signal.map (fun v -> v.Listing.ListingId)             |> Binding.toView source "ListingId"
     model |> Signal.map (fun v -> v.Views |> sprintf "Views: %d")  |> Binding.toView source "Views"
-    //model |> Signal.map (fun v -> v.DateAdded |> showAsUpdated)    |> Binding.toView source "Changed"
+    model |> Signal.map (fun v -> v.DateAdded |> showAsUpdated)    |> Binding.toView source "Changed"
     model |> Signal.map (fun v -> v.Image |> urlToString)          |> Binding.toView source "Image"
 
     let addListingMessage = 
         Msg.RequestAction 
         <| RequestAction.SetListingDetail 
             ({
-                Page = (new ListingChanges())
+                Page = fun () -> new ListingChanges() :> Page
                 Navigation = fun (navPage: INavigation) -> navPage.PushAsync
                 Binding = listingChangesComponent }, model.Value.Listing.ListingId )
 
@@ -123,25 +126,26 @@ let listingsComponent source (model : ISignal<Model>) =
             |> Seq.groupBy (fun x -> x.Listing.ListingId)
             |> Seq.map (fun (x, xs) -> xs |> Seq.sortBy (fun y -> y.DateAdded) |> Seq.last)
             |> Seq.filter (fun x -> x.Listing.Price <> "Sold" || showRemovedListings)
-            |> Seq.filter (fun x -> x.WasRemovedOrSold = false || showRemovedListings)
+            |> Seq.filter (fun x -> x.IsActive = true || showRemovedListings)
             |> Seq.sortByDescending (fun x -> x.DateAdded)
             |> Seq.toList )
 
     let listingMessage = 
         Msg.ChangePage <| AddListing {
-            Page = (new AddListing())
+            Page = fun () -> new AddListing() :> Page
             Navigation = fun (navPage: INavigation) -> navPage.PushAsync
             Binding = addListing }
             
     let aboutMessage = 
         Msg.ChangePage <| About {
-                Page = (new About())
+                Page = fun () -> new About() :> Page
                 Navigation = fun (navPage: INavigation) -> navPage.PushAsync
                 Binding = aboutComponet }
             
     let canChangePage = 
         model 
-        |> Signal.map (fun x -> x.CurrentPage = ListingsPage && (not x.IsRefreshing))
+        |> Signal.map (fun x -> let cp = x.CurrentPage
+                                cp = ListingsPage && (not x.IsRefreshing))
             
     sortedListings.Value |> List.iter (fun x -> Debug.WriteLine <| sprintf "Listing %s %s" x.Listing.Title x.Listing.Price)
     model |> Signal.map (fun x -> x.IsRefreshing) |> Binding.toView source "IsRefreshing"
@@ -152,7 +156,7 @@ let listingsComponent source (model : ISignal<Model>) =
         Msg.RequestAction 
         <| RequestAction.SetListingDetail 
             ({
-                Page = (new ListingChanges())
+                Page = fun () -> new ListingChanges() :> Page
                 Navigation = fun (navPage: INavigation) -> navPage.PushAsync
                 Binding = listingChangesComponent }, model.Listing.ListingId )
                 
@@ -164,7 +168,7 @@ let listingsComponent source (model : ISignal<Model>) =
         BindingCollection.toView source "Listings" sortedListings (listingChangesCell canChangePage) 
         |> Observable.map (fun (msg,model) -> msg)
         
-        source |> Binding.createMessageParam "ItemTapped" listingChangeMessage
+        source |> Binding.createMessageParamChecked "ItemTapped" canChangePage listingChangeMessage
         
         source |> Binding.createMessageChecked "AddListing" canChangePage listingMessage
         source |> Binding.createMessageChecked "ShowRemoved" canChangePage (RequestAction ToggleShowRemoved)
@@ -186,7 +190,7 @@ let applicationRoot navPage (path, provider) =
 
     let load = fetchData db messageSource
     let validate = validateListing messageSource
-    let save = saveItem db
+    let save = saveItem db Debug.WriteLine
     let refresh = refreshListings messageSource
     let delete = deleteListing db messageSource
     
@@ -202,5 +206,5 @@ let applicationRoot navPage (path, provider) =
 let createApplication (path, provider) = 
     let page = Listings()
     let nav = new NavigationWithBehaviour(page)
-    let app = applicationRoot page.Navigation (path, provider)
+    let app = applicationRoot nav (path, provider)
     Framework.createApplicationInfo app nav

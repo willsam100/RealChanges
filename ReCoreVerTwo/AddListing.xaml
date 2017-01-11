@@ -11,11 +11,11 @@
 			</Style>
 		</ResourceDictionary>
 	</ContentPage.Resources>
-	<StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand">
-		<Entry Margin="20,40,20,5" x:Name="entry" Placeholder="Trademe Link or Listing #" FontSize="20" TextColor = "Black" />
+	<StackLayout Orientation="Vertical" HorizontalOptions="Fill">
+		<Entry Margin="20,40,20,5" x:Name="entry" Text="{Binding ListingText}" Placeholder="Trademe Link or Listing #" FontSize="20" TextColor = "Black" />
 		<Button Margin="20,5,20,0" Text="Track" BackgroundColor="#FFD180" FontSize="20" TextColor = "Black" 
                 Command="{Binding TrackCommand}" CommandParameter="{Binding Source={x:Reference entry}, Path=Text}" 
-                HorizontalOptions="FillAndExpand" />
-		<Label Margin="20,0,20,0" Text="{Binding Output}" FontSize="20" TextColor = "Black" />
+                HorizontalOptions="Fill" />
+		<Label Margin="20,0,20,0" Text="{Binding Output}" FontSize="30" TextColor = "Black" />
 	</StackLayout>
 </ContentPage>

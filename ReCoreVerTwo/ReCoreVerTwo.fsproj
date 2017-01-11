@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Script.fsx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Listings.xaml" />

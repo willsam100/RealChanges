@@ -1,6 +1,6 @@
 ﻿using UIKit;
 
-namespace RealEstate.iOSC
+namespace RealEstate.iOS
 {
 	public class Application
 	{

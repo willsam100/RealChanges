@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 using Foundation;
-using Re.Core;
 using UIKit;
 using Xamarin.Forms;
-using Gjallarhorn.XamarinForms;
 using Xamarin.Forms.Platform.iOS;
 
-namespace RealEstate.iOSC
+namespace RealEstate.iOS
 {
 	// The UIApplicationDelegate for the application. This class is responsible for launching the
 	// User Interface of the application, as well as listening (and optionally responding) to application events from iOS.
