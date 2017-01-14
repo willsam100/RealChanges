@@ -6,8 +6,8 @@
     <ProjectGuid>{422FFE81-F6F1-4406-B07D-86098D832AA3}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>RealEstate.iOSC</RootNamespace>
-    <AssemblyName>RealEstate.iOSC</AssemblyName>
+    <RootNamespace>RealEstate.iOS</RootNamespace>
+    <AssemblyName>RealEstate.iOS</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
@@ -90,9 +90,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="RealEstate">
-      <HintPath>..\RealEstate\obj\Debug\RealEstate.dll</HintPath>
-    </Reference>
     <Reference Include="Gjallarhorn.Bindable.XamarinForms">
       <HintPath>..\..\..\code\Gjallarhorn\src\Gjallarhorn.Bindable.XamarinForms\obj\Debug\Gjallarhorn.Bindable.XamarinForms.dll</HintPath>
     </Reference>
@@ -138,6 +135,21 @@
     <Reference Include="Corcav.Behaviors">
       <HintPath>..\packages\Corcav.Behaviors.2.3.6\lib\dotnet\Corcav.Behaviors.dll</HintPath>
     </Reference>
+    <Reference Include="WebP.Touch">
+      <HintPath>..\packages\WebP.Touch.1.0.2\lib\Xamarin.iOS10\WebP.Touch.dll</HintPath>
+    </Reference>
+    <Reference Include="FFImageLoading">
+      <HintPath>..\packages\Xamarin.FFImageLoading.2.2.7\lib\Xamarin.iOS10\FFImageLoading.dll</HintPath>
+    </Reference>
+    <Reference Include="FFImageLoading.Platform">
+      <HintPath>..\packages\Xamarin.FFImageLoading.2.2.7\lib\Xamarin.iOS10\FFImageLoading.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="FFImageLoading.Forms">
+      <HintPath>..\packages\Xamarin.FFImageLoading.Forms.2.2.7\lib\Xamarin.iOS10\FFImageLoading.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="FFImageLoading.Forms.Touch">
+      <HintPath>..\packages\Xamarin.FFImageLoading.Forms.2.2.7\lib\Xamarin.iOS10\FFImageLoading.Forms.Touch.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -171,9 +183,9 @@
       <Project>{DC46E916-06FC-4256-ACFC-EBC7C9DC95EA}</Project>
       <Name>Gjallarhorn.Bindable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReCoreVerTwo\ReCoreVerTwo.fsproj">
+    <ProjectReference Include="..\RealEstateCore\RealEstateCore.fsproj">
       <Project>{A55F904D-D3DB-46B3-99A5-A01AC960B8D9}</Project>
-      <Name>ReCoreVerTwo</Name>
+      <Name>RealEstateCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

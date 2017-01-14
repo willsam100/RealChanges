@@ -1,8 +1,8 @@
-﻿namespace ReCoreVerTwo
+﻿namespace Core
 open System.Reflection
 open System.Runtime.CompilerServices
 
-[<assembly: AssemblyTitle("ReCoreVerTwo")>]
+[<assembly: AssemblyTitle("Core")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]

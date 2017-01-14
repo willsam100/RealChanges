@@ -6,6 +6,7 @@ open System.Diagnostics
 open Database
 open Gjallarhorn
 
+// TODO: Remove the connection variable (by retuning it) and chagne all methods to functions
 type ApiClient() = 
     static let mutable dbConnection: SQLiteConnection = null
     
@@ -61,7 +62,7 @@ type ApiClient() =
                   
         rows |> List.iter (fun x -> dbConnection.Delete(x) |> ignore)
          
-    member this.Open(path: string, provider: SQLitePCL.ISQLite3Provider) =
+    member this.Open(path: string) =
       Debug.WriteLine <| sprintf "[API] Opening"
       dbConnection <- runMigration path
 
@@ -82,7 +83,7 @@ let deleteListing (db: ApiClient) (source : ObservableSource<_>) (listingItems: 
         Debug.WriteLine <| sprintf "Deleting listing: %A items: %A" listingId listingItems
         try 
             listingItems |> List.iter db.DeleteListing
-            ReCoreVerTwo.Update.DeletedListing listingId |> source.Trigger
+            RealEstateCore.Update.DeletedListing listingId |> source.Trigger
             Debug.WriteLine <| sprintf "Listing deleted from db: %A" listingId
         with 
         | e -> Debug.WriteLine <| sprintf "DB Error: %s" e.Message 
@@ -92,14 +93,14 @@ let deleteListing (db: ApiClient) (source : ObservableSource<_>) (listingItems: 
 let fetchData (db: ApiClient) (source : ObservableSource<_>) () =
     let cts = new System.Threading.CancellationTokenSource()
     let wf = async {
-        db.GetListingItems() |> ReCoreVerTwo.FetchItems |> source.Trigger
+        db.GetListingItems() |> RealEstateCore.FetchItems |> source.Trigger
     }
     Async.Start(wf, cancellationToken = cts.Token)
     
 let refreshListings (source : ObservableSource<_>) (listingItems: FullListing list)  =
     let cts = new System.Threading.CancellationTokenSource()
     let wf = async {
-        listingItems |> ListingDownloader.refresh Debug.WriteLine |> ReCoreVerTwo.RefrehedItems |> source.Trigger
+        listingItems |> ListingDownloader.refresh Debug.WriteLine |> RealEstateCore.RefrehedItems |> source.Trigger
     }
     Async.Start(wf, cancellationToken = cts.Token)
     
@@ -113,6 +114,6 @@ let saveItem: ApiClient -> (string -> unit) -> FullListing -> unit =
 let validateListing (source : ObservableSource<_>) url = 
     let cts = new System.Threading.CancellationTokenSource()
     let wf = async {
-        url |> ListingDownloader.validateListing Debug.WriteLine |> ReCoreVerTwo.ItemValidated |> source.Trigger
+        url |> ListingDownloader.validateListing Debug.WriteLine |> RealEstateCore.ItemValidated |> source.Trigger
     }
     Async.Start(wf, cancellationToken = cts.Token)

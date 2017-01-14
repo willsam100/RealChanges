@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ReCoreVerTwo.Listings" xmlns:local="clr-namespace:ReCoreVerTwo;assembly=ReCoreVerTwo" xmlns:behaviors="clr-namespace:Corcav.Behaviors;assembly=Corcav.Behaviors" Title="Listings">
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+			 x:Class="RealEstateCore.Listings" 
+			 xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" 
+             xmlns:behaviors="clr-namespace:Corcav.Behaviors;assembly=Corcav.Behaviors" 
+			 Title="Listings"
+			 xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms">
 <ContentPage.Resources>
 	<ResourceDictionary>
 		<Style TargetType="Label">
@@ -17,7 +23,7 @@
 <!--	<ToolbarItem Text="{Binding toolbarShow}" Command="{Binding ShowRemoved}"/>-->
 	
 </ContentPage.ToolbarItems>
-<ListView Margin="0,0,0,0" ItemsSource="{Binding Listings}" HasUnevenRows="True" 
+<ListView Margin="0,0,0,0" ItemsSource="{Binding Listings}" HasUnevenRows="True" CachingStrategy="RecycleElement"
 		  IsPullToRefreshEnabled="True"
 		  RefreshCommand="{Binding Refresh}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}" BackgroundColor="White">
   	<behaviors:Interaction.Behaviors>
@@ -34,7 +40,7 @@
 					<RelativeLayout HeightRequest="100" MinimumHeightRequest="100">
 					<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100" 
 								 HorizontalOptions="FillAndExpand" x:Name="anchorView">
-							<Image Margin="0,2,0,0" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" 
+							<ffimageloading:CachedImage Margin="0,2,0,0" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" 
 								   Source="{Binding Binding.Image}" BackgroundColor="White" HorizontalOptions="Start"
 								   VerticalOptions="Start" Aspect="Fill" />
 						<StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand">

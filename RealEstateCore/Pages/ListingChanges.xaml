@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ReCoreVerTwo.ListingChanges" xmlns:local="clr-namespace:ReCoreVerTwo;assembly=ReCoreVerTwo" Title="{Binding Title}">
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+		     x:Class="RealEstateCore.ListingChanges" 
+    	   	 xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" 
+    	   	 xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+			 Title="{Binding Title}">
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<Style TargetType="Label">
@@ -15,7 +20,7 @@
 	<ListView.HeaderTemplate >
       <DataTemplate>
   			<StackLayout>
-	    		<Image Source="{Binding DetailImage}" HeightRequest="200" WidthRequest ="420" Aspect="AspectFill"/>
+	    		<ffimageloading:CachedImage Source="{Binding DetailImage}" HeightRequest="200" WidthRequest ="420" Aspect="AspectFill"/>
 	    		<Button Margin="20,-30,20,5" BorderRadius="20" Opacity="0.95" HeightRequest="50" BackgroundColor="#FFD180" Command="{Binding ViewListing}" Text="View Listing"/>
     		</StackLayout>
 	      </DataTemplate>

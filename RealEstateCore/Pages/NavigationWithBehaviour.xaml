@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<NavigationPage xmlns="http://xamarin.com/schemas/2014/forms" 
+				xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+				x:Class="RealEstateCore.NavigationWithBehaviour" 
+			    xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" 
+				xmlns:behaviors="clr-namespace:Corcav.Behaviors;assembly=Corcav.Behaviors">
+	<behaviors:Interaction.Behaviors>
+		<behaviors:BehaviorCollection>
+			<behaviors:EventToCommand EventName="Popped" Command="{Binding PoppedCommand}"/>
+		</behaviors:BehaviorCollection>
+	</behaviors:Interaction.Behaviors>
+</NavigationPage>

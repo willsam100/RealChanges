@@ -1,4 +1,4 @@
-﻿namespace ReCoreVerTwo
+﻿namespace RealEstateCore
 open Xamarin.Forms
 open Xamarin.Forms.Xaml
 

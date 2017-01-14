@@ -1,5 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ReCoreVerTwo.About" xmlns:local="clr-namespace:ReCoreVerTwo;assembly=ReCoreVerTwo">
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+			 x:Class="RealEstateCore.About" 
+			 xmlns:local="clr-namespace:Core;assembly=RealEstateCore">
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<Style TargetType="Label">

@@ -151,11 +151,16 @@ let asyncQueryListing (logger: string -> unit) listingIdWithSource =
                 return! HtmlDocument.AsyncLoad(link)
             with 
             | :? System.Net.WebException as webException -> 
-                                                            return webException.Response.GetResponseStream () 
-                                                            |> createStreamReader (System.Text.Encoding.GetEncoding("utf-8"))
-                                                            |> readAllData 
-                                                            |> toHtmlDocument
-                                                            
+                    return Option.ofObj webException 
+                    |> Option.map (fun x -> logger <| sprintf "WebException:%s\n%s" x.Message x.StackTrace; x)
+                    |> Option.bind (fun x ->  Option.ofObj x.Response)
+                    |> Option.map (fun x -> 
+                                            x.GetResponseStream () 
+                                            |> createStreamReader (System.Text.Encoding.GetEncoding("utf-8"))
+                                            |> readAllData 
+                                            |> toHtmlDocument )
+                    |> defaultArg <| HtmlDocument.New Seq.empty
+                                            
             | e -> logger <| sprintf "Error:%A%s\n%A" (e.GetType ()) e.Message e.StackTrace
                    return HtmlDocument.New Seq.empty
         }

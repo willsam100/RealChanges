@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
+using FFImageLoading.Forms.Touch;
 using Foundation;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
-
 namespace RealEstate.iOS
 {
 	// The UIApplicationDelegate for the application. This class is responsible for launching the
@@ -16,15 +16,14 @@ namespace RealEstate.iOS
 		{
 			var personalFolder = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 			var path = Path.Combine(personalFolder, "..", "Library");
-			var provider = new SQLitePCL.SQLite3Provider_bait();
-			
+
+			CachedImageRenderer.Init();
 			Corcav.Behaviors.Infrastructure.Init();
 
 			Forms.Init();
-			var info = ReCoreVerTwo.RealEstate.CreateApplication(path, provider);
+			var info = RealEstateCore.RealEstate.CreateApplication(path);
 
 			LoadApplication(info.CreateApp());
-
 			return base.FinishedLaunching(uiApplication, launchOptions);
 		}
 	}

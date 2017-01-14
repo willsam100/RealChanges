@@ -1,5 +1,4 @@
-﻿namespace ReCoreVerTwo
-open System
+﻿namespace RealEstateCore
 open System.Diagnostics
 open System.Threading.Tasks
 open Xamarin.Forms

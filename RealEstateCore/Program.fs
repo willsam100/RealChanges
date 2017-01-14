@@ -1,4 +1,4 @@
-﻿module ReCoreVerTwo.RealEstate
+﻿module RealEstateCore.RealEstate
 open BackgroundTasks
 open Xamarin.Forms
 open System.Diagnostics
@@ -6,7 +6,6 @@ open System
 open Gjallarhorn
 open Gjallarhorn.Bindable
 open Gjallarhorn.XamarinForms
-open ReCoreVerTwo
 
 let aboutComponet source (model: ISignal<Model>) = 
     List.empty<IObservable<Msg>>
@@ -152,7 +151,7 @@ let listingsComponent source (model : ISignal<Model>) =
     
     let listingChangeMessage (item: ItemTappedEventArgs) = 
         
-        let model = item.Item :?> ModelBindingSource<ListingDownloader.FullListing, ReCoreVerTwo.Msg> |> (fun x -> x.Model.Value)
+        let model = item.Item :?> ModelBindingSource<ListingDownloader.FullListing, RealEstateCore.Msg> |> (fun x -> x.Model.Value)
         Msg.RequestAction 
         <| RequestAction.SetListingDetail 
             ({
@@ -177,14 +176,14 @@ let listingsComponent source (model : ISignal<Model>) =
         source |> Binding.createMessage "PoppedCommand" (ChangePage Root)
     ]
 
-let applicationRoot navPage (path, provider) = 
+let applicationRoot navPage path = 
 
-    let openDb path provider =  
+    let openDb path =  
         let db = new ApiClient()
-        db.Open(path, provider) 
+        db.Open(path) 
         db
         
-    let db = openDb path provider
+    let db = openDb path
 
     let messageSource = ObservableSource<Update>()
 
@@ -203,8 +202,8 @@ let applicationRoot navPage (path, provider) =
     app
 
 [<CompiledName("CreateApplication")>]
-let createApplication (path, provider) = 
+let createApplication path = 
     let page = Listings()
     let nav = new NavigationWithBehaviour(page)
-    let app = applicationRoot nav (path, provider)
+    let app = applicationRoot nav path
     Framework.createApplicationInfo app nav
