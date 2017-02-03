@@ -16,7 +16,7 @@
 		<MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
 		<MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-		<AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+		<AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
 		<AndroidTlsProvider>
 		</AndroidTlsProvider>
 		<AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
@@ -30,7 +30,8 @@
 		<ErrorReport>prompt</ErrorReport>
 		<WarningLevel>4</WarningLevel>
 		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-		<AndroidSupportedAbis>armeabi-v7a;armeabi</AndroidSupportedAbis>
+		<AndroidSupportedAbis>arm64-v8a;armeabi;armeabi-v7a;x86;x86_64</AndroidSupportedAbis>
+		<AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
 		<DebugSymbols>true</DebugSymbols>
@@ -113,21 +114,6 @@
 		<Reference Include="Xamarin.Android.Support.v7.MediaRouter">
 		  <HintPath>..\packages\Xamarin.Android.Support.v7.MediaRouter.23.3.0\lib\MonoAndroid403\Xamarin.Android.Support.v7.MediaRouter.dll</HintPath>
 		</Reference>
-		<Reference Include="FormsViewGroup">
-		  <HintPath>..\packages\Xamarin.Forms.2.3.3.175\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
-		</Reference>
-		<Reference Include="Xamarin.Forms.Core">
-		  <HintPath>..\packages\Xamarin.Forms.2.3.3.175\lib\MonoAndroid10\Xamarin.Forms.Core.dll</HintPath>
-		</Reference>
-		<Reference Include="Xamarin.Forms.Platform.Android">
-		  <HintPath>..\packages\Xamarin.Forms.2.3.3.175\lib\MonoAndroid10\Xamarin.Forms.Platform.Android.dll</HintPath>
-		</Reference>
-		<Reference Include="Xamarin.Forms.Platform">
-		  <HintPath>..\packages\Xamarin.Forms.2.3.3.175\lib\MonoAndroid10\Xamarin.Forms.Platform.dll</HintPath>
-		</Reference>
-		<Reference Include="Xamarin.Forms.Xaml">
-		  <HintPath>..\packages\Xamarin.Forms.2.3.3.175\lib\MonoAndroid10\Xamarin.Forms.Xaml.dll</HintPath>
-		</Reference>
 		<Reference Include="Corcav.Behaviors">
 		  <HintPath>..\packages\Corcav.Behaviors.2.3.6\lib\dotnet\Corcav.Behaviors.dll</HintPath>
 		</Reference>
@@ -142,6 +128,39 @@
 		</Reference>
 		<Reference Include="FFImageLoading.Forms.Droid">
 		  <HintPath>..\packages\Xamarin.FFImageLoading.Forms.2.2.7\lib\MonoAndroid10\FFImageLoading.Forms.Droid.dll</HintPath>
+		</Reference>
+		<Reference Include="FormsViewGroup">
+		  <HintPath>..\packages\Xamarin.Forms.2.3.3.180\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.Forms.Core">
+		  <HintPath>..\packages\Xamarin.Forms.2.3.3.180\lib\MonoAndroid10\Xamarin.Forms.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.Forms.Platform.Android">
+		  <HintPath>..\packages\Xamarin.Forms.2.3.3.180\lib\MonoAndroid10\Xamarin.Forms.Platform.Android.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.Forms.Platform">
+		  <HintPath>..\packages\Xamarin.Forms.2.3.3.180\lib\MonoAndroid10\Xamarin.Forms.Platform.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.Forms.Xaml">
+		  <HintPath>..\packages\Xamarin.Forms.2.3.3.180\lib\MonoAndroid10\Xamarin.Forms.Xaml.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.GooglePlayServices.Base">
+		  <HintPath>..\packages\Xamarin.GooglePlayServices.Base.26.0.0.0\lib\MonoAndroid41\Xamarin.GooglePlayServices.Base.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.GooglePlayServices.Analytics">
+		  <HintPath>..\packages\Xamarin.GooglePlayServices.Analytics.26.0.0.0\lib\MonoAndroid41\Xamarin.GooglePlayServices.Analytics.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.GooglePlayServices.AppIndexing">
+		  <HintPath>..\packages\Xamarin.GooglePlayServices.AppIndexing.26.0.0.0\lib\MonoAndroid41\Xamarin.GooglePlayServices.AppIndexing.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarin.GooglePlayServices.Ads">
+		  <HintPath>..\packages\Xamarin.GooglePlayServices.Ads.26.0.0.0\lib\MonoAndroid41\Xamarin.GooglePlayServices.Ads.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarinos.AdMob.Forms.Abstractions">
+		  <HintPath>..\packages\Xamarinos.AdMob.FormsPlugin.1.0.8\lib\MonoAndroid10\Xamarinos.AdMob.Forms.Abstractions.dll</HintPath>
+		</Reference>
+		<Reference Include="Xamarinos.AdMob.Forms.Android">
+		  <HintPath>..\packages\Xamarinos.AdMob.FormsPlugin.1.0.8\lib\MonoAndroid10\Xamarinos.AdMob.Forms.Android.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
@@ -168,6 +187,11 @@
 		<AndroidResource Include="Resources\drawable\splash.xml" />
 		<AndroidResource Include="Resources\drawable\screen.png" />
 		<AndroidResource Include="Resources\drawable\about.xml" />
+		<AndroidResource Include="Resources\values\colors.xml" />
+		<AndroidResource Include="Resources\drawable\splashscreen.jpg" />
+		<AndroidResource Include="Resources\drawable\splashscreen2.jpg" />
+		<AndroidResource Include="Resources\drawable\home.png" />
+		<AndroidResource Include="Resources\drawable\find.xml" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Resources\drawable\" />
@@ -189,5 +213,5 @@
 	</ItemGroup>
 	<Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 	<Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />
-	<Import Project="..\packages\Xamarin.Forms.2.3.3.175\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.3.175\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />
+	<Import Project="..\packages\Xamarin.Forms.2.3.3.180\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.3.3.180\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />
 </Project>

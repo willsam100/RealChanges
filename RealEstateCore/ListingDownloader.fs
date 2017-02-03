@@ -2,6 +2,13 @@
 open FSharp.Data
 open System
 open System.IO
+open System.Collections.Generic
+open System.Net
+
+type Either<'a,'b> = Choice<'b,'a>
+let  Right x :Either<'a,'b> = Choice1Of2 x
+let  Left  x :Either<'a,'b> = Choice2Of2 x
+let  (|Right|Left|) = function Choice1Of2 x -> Right x | Choice2Of2 x -> Left x
 
 type ListingId = 
     | RealEstate of string
@@ -23,10 +30,13 @@ type FullListing = {
 
 module RealEstate = 
 
-    let wasRemoved (body: HtmlDocument) = 
-        false
-        
     let isExpired (body: HtmlDocument) = 
+        body.Descendants ["h1"]
+        |> Seq.filter (fun x -> x.InnerText () = "This listing is no longer on the realestate.co.nz website")
+        |> Seq.length 
+        |> (fun count -> count = 1)
+        
+    let wasRemoved (body: HtmlDocument) = 
         false
     
     let header (body: HtmlDocument) = 
@@ -62,6 +72,7 @@ module RealEstate =
         |> Seq.filter (fun x -> x.Contains "Listing Views")
         |> Seq.tryHead
         |> Option.map (fun x -> x.Replace("Listing Views", "").Trim())
+        |> Option.map (fun x -> x.Replace(",", ""))
         |> Option.map (Int32.TryParse)
         |> Option.bind (fun (x,y) -> if x then Some y else None)
         
@@ -135,41 +146,70 @@ module TradeMe =
                      | true, a -> Some a
                      | false, _ -> None )
 
-let asyncQueryListing (logger: string -> unit) listingIdWithSource = 
+let handleException logger link action = 
 
-    let downloadListingAsync logger link = 
-    
-        let createStreamReader (encode: Text.Encoding) (data: IO.Stream) = new StreamReader(data, encode)
-        let toHtmlDocument data = HtmlDocument.Parse(data)
-        let readAllData (streamReader: StreamReader) = 
+    let createStreamReader (encode: Text.Encoding) (data: IO.Stream) = new StreamReader(data, encode)
+    let toHtmlDocument data = HtmlDocument.Parse(data)
+    let readAllData (streamReader: StreamReader) = 
+        try 
             let data = streamReader.ReadToEnd ()
             streamReader.Dispose ()
             data
-    
-        async {
-            try 
-                return! HtmlDocument.AsyncLoad(link)
-            with 
-            | :? System.Net.WebException as webException -> 
-                    return Option.ofObj webException 
-                    |> Option.map (fun x -> logger <| sprintf "WebException:%s\n%s" x.Message x.StackTrace; x)
-                    |> Option.bind (fun x ->  Option.ofObj x.Response)
-                    |> Option.map (fun x -> 
-                                            x.GetResponseStream () 
-                                            |> createStreamReader (System.Text.Encoding.GetEncoding("utf-8"))
-                                            |> readAllData 
-                                            |> toHtmlDocument )
-                    |> defaultArg <| HtmlDocument.New Seq.empty
-                                            
-            | e -> logger <| sprintf "Error:%A%s\n%A" (e.GetType ()) e.Message e.StackTrace
-                   return HtmlDocument.New Seq.empty
-        }
-        
-    
-                    
+        with 
+        | e -> "<p>empty</p>"
+
+    let safeReadData (x: Net.WebResponse) = 
+        try 
+            x.GetResponseStream () 
+            |> createStreamReader (System.Text.Encoding.GetEncoding("utf-8"))
+            |> readAllData 
+            |> toHtmlDocument
+        with 
+        | e -> HtmlDocument.New Seq.empty
+
+    let filterHandledStatusCodes x = 
+        x = HttpStatusCode.NotFound
+
+
+    let evaluateException: exn -> (string * string) list = 
+        fun ex -> [("exception", ex.StackTrace); ("message", ex.Message)]
+
+    try 
+        action ()
+    with 
+    | :? WebException as webException -> 
+            
+            let webExceptionOption = Option.ofObj webException 
+            let data = webExceptionOption |> Option.map evaluateException |> defaultArg <| []
+
+            webExceptionOption 
+            |> Option.bind (fun x -> x.Response |> Option.ofObj) 
+            |> Option.bind (fun x -> x :? HttpWebResponse 
+                                     |> function | true -> Some (x :?> HttpWebResponse) | false -> None )
+            |> Option.map (fun x -> x.StatusCode)
+            |> Option.filter filterHandledStatusCodes
+            |> function | Some x -> None | None -> Some true
+            |> Option.iter (fun x -> logger "webException" <| Map (["listingID", link] @ data))
+
+            webExceptionOption
+            |> Option.bind (fun x ->  Option.ofObj x.Response)
+            |> Option.map safeReadData
+            |> function 
+                | Some x -> x 
+                | None -> logger "WebExcceptionFailedParse" <| Map (["listingID", link] @ data)
+                          HtmlDocument.New Seq.empty
+                                    
+    | e -> 
+            let webExceptionOption = Option.ofObj e 
+            logger "Exception" <| Map (["listingID", link] @ (evaluateException e))
+
+            HtmlDocument.New Seq.empty
+
+let asyncQueryListing (logger: string -> Map<string, string> -> unit) listingIdWithSource = 
+
     let asyncQueryListing link wasRemoved isExpired header askingPrice image views listingId =  
         async {
-            let! body = downloadListingAsync logger link
+            let body = handleException logger link <| fun () -> HtmlDocument.AsyncLoad(link) |> Async.RunSynchronously
             return match wasRemoved body, isExpired body with 
                     | true, _ -> Some <| {
                                            Listing = { Price = "Removed"; Title = "This listing was withdrawn by the administrator"; ListingId = listingId }
@@ -178,14 +218,15 @@ let asyncQueryListing (logger: string -> unit) listingIdWithSource =
                                            Image = None 
                                            IsActive = false }
                     | _, true -> Some <| {
-                                   Listing = { Price = "Sold"; Title = "This listing is no longer available"; ListingId = listingId }
+                                   Listing = { Price = "Sold or Removed"; Title = "This listing is no longer available"; ListingId = listingId }
                                    DateAdded = DateTime.Now
                                    Views = 0
                                    Image = None
                                    IsActive = false }
                     | _, _ -> 
-                        header body |> Option.bind (fun header ->  
-                        views body |> Option.bind (fun views -> 
+                        let result = 
+                            header body |> Option.bind (fun header ->  
+                            views body |> Option.bind (fun views -> 
                                 askingPrice body |> Option.map (fun askingPrice -> 
                                 {
                                     Listing = {Price = askingPrice; Title = header; ListingId = listingId}
@@ -193,9 +234,13 @@ let asyncQueryListing (logger: string -> unit) listingIdWithSource =
                                     Views = views
                                     Image = image body |> Option.map Uri 
                                     IsActive = true } )))
+                        match result with 
+                        | Some x -> result
+                        | None -> logger "ParseFailure" <| Map [("link", link)]
+                                  None
+    
         }
     
-    logger <| sprintf "Refreshing for %A" listingIdWithSource
     match listingIdWithSource with  
     | TradeMe listingId -> 
         let link = sprintf "http://www.trademe.co.nz/Browse/Listing.aspx?id=%s" listingId
@@ -206,27 +251,27 @@ let asyncQueryListing (logger: string -> unit) listingIdWithSource =
 
 
 let refresh logger (listingItems: FullListing list) =
+    async {
+        
+        let IdsToRemove = listingItems |> List.filter (fun x -> x.Listing.Price = "Sold" || x.IsActive = false ) |> List.map (fun x -> x.Listing.ListingId)
+        let updateListings = 
+            listingItems 
+                |> List.filter (fun x -> IdsToRemove |> List.exists (fun y -> y = x.Listing.ListingId) |> not )
+                |> List.map (fun x -> x.Listing.ListingId)
+                |> Set.ofList
+                |> Set.toSeq
+                |> Seq.map (asyncQueryListing logger)
+                |> Async.Parallel 
+                |> Async.RunSynchronously
+                |> Array.toList 
+                |> List.choose (fun x -> x)
 
-    let IdsToRemove = listingItems |> List.filter (fun x -> x.Listing.Price = "Sold" || x.IsActive = false ) |> List.map (fun x -> x.Listing.ListingId)
-
-    let updateListings = 
-        listingItems 
-            |> List.filter (fun x -> IdsToRemove |> List.exists (fun y -> y = x.Listing.ListingId) |> not )
-            |> List.map (fun x -> x.Listing.ListingId)
-            |> Set.ofList
-            |> Set.toSeq
-            |> Seq.map (asyncQueryListing logger)
-            |> Async.Parallel 
-            |> Async.RunSynchronously 
-            |> (fun x -> logger <| sprintf "Completed refreshing all items"; x)
-            |> Array.toList 
-            |> List.choose (fun x -> x)
-
-    let newItems = Set.difference (updateListings |> List.map (fun x -> x.Listing) |> Set.ofList) (listingItems |> List.map (fun x -> x.Listing) |> Set.ofList )
-    updateListings |> List.filter (fun x -> newItems |> Set.toList |> List.exists (fun y -> y.ListingId = x.Listing.ListingId))
+        let newItems = Set.difference (updateListings |> List.map (fun x -> x.Listing) |> Set.ofList) (listingItems |> List.map (fun x -> x.Listing) |> Set.ofList )
+        return updateListings |> List.filter (fun x -> newItems |> Set.toList |> List.exists (fun y -> y.ListingId = x.Listing.ListingId))
+    } |> Async.RunSynchronously
     
     
-let validateListing (logger: string -> unit) input = 
+let validateListing (logger: string -> Map<string, string> -> unit) input = 
 
     let parseUrl (url: string) = 
     
@@ -247,7 +292,6 @@ let validateListing (logger: string -> unit) input =
    
     input 
     |> parseUrl 
-    |> (fun x -> logger <| sprintf "Id: %A" x; x)
     |> Option.bind (asyncQueryListing logger >> Async.RunSynchronously)
 
 let listingIdToLink = 

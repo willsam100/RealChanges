@@ -1,1 +1,38 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="RealEstateCore.SoldListings" xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" xmlns:behaviors="clr-namespace:Corcav.Behaviors;assembly=Corcav.Behaviors" Title="Listings" xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms">
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Style TargetType="Label">
+				<Setter Property="BackgroundColor" Value="White" />
+				<Setter Property="TextColor" Value="Black" />
+			</Style>
+			<Style TargetType="StackLayout">
+				<Setter Property="BackgroundColor" Value="White" />
+			</Style>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<ListView Margin="0,0,0,0" ItemsSource="{Binding SoldListings}" HasUnevenRows="True" IsPullToRefreshEnabled="True" RefreshCommand="{Binding Refresh}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}" BackgroundColor="White">
+		<behaviors:Interaction.Behaviors>
+			<behaviors:BehaviorCollection>
+				<behaviors:EventToCommand EventName="ItemTapped" Command="{Binding ItemTapped}" PassEventArgument="true" />
+			</behaviors:BehaviorCollection>
+		</behaviors:Interaction.Behaviors>
+		<ListView.ItemTemplate>
+			<DataTemplate>
+				<ViewCell>
+					<ViewCell.ContextActions>
+						<MenuItem Command="{Binding Binding.OnDelete}" Text="Delete" IsDestructive="True" />
+					</ViewCell.ContextActions>
+					<StackLayout Orientation="Horizontal" HeightRequest="100" MinimumHeightRequest="100" HorizontalOptions="FillAndExpand" x:Name="anchorView">
+						<ffimageloading:CachedImage Margin="0,2,0,0" WidthRequest="150" HeightRequest="100" MinimumHeightRequest="100" Source="{Binding Binding.Image}" BackgroundColor="White" HorizontalOptions="Start" VerticalOptions="Start" Aspect="Fill" />
+						<StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand">
+							<Label Text="{Binding Binding.Title}" FontSize="15" />
+							<Label Text="{Binding Binding.Price}" FontSize="14" />
+							<Label Text="{Binding Binding.Views}" FontSize="14" />
+						</StackLayout>
+					</StackLayout>
+				</ViewCell>
+			</DataTemplate>
+		</ListView.ItemTemplate>
+	</ListView>
+</ContentPage>

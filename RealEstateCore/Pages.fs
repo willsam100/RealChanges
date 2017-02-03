@@ -1,22 +1,38 @@
 ﻿namespace RealEstateCore
 open Xamarin.Forms
 open Xamarin.Forms.Xaml
+open FFImageLoading.Forms
+open System
 
 type NavigationWithBehaviour(page: Page) as this = 
     inherit NavigationPage(page)
     do this.LoadFromXaml(typeof<NavigationWithBehaviour>) |> ignore
+       this.Title <- page.Title
+       this.Icon <- page.Icon
 
 type Listings() as this = 
     inherit ContentPage() 
     do this.LoadFromXaml(typeof<Listings>) |> ignore
-        
-type About() as this = 
+
+type SoldListings() as this = 
     inherit ContentPage() 
-    do this.LoadFromXaml(typeof<About>) |> ignore
+    do this.LoadFromXaml(typeof<SoldListings>) |> ignore
+       this.Title <- "Sold"
+        
+type AboutPage() as this = 
+    inherit ContentPage() 
+    let icon () = 
+        let a = FileImageSource()
+        a.File <- "Feedback"
+        a   
+
+    do this.LoadFromXaml(typeof<AboutPage>) |> ignore
+       this.Title <- "Feedback"
 
 type ListingChanges() as this = 
     inherit ContentPage() 
-    do this.LoadFromXaml(typeof<ListingChanges>) |> ignore        
+    do this.LoadFromXaml(typeof<ListingChanges>) |> ignore   
+    let image = this.FindByName<CachedImage>("image")  
 
 type AddListing() as this = 
     inherit ContentPage() 

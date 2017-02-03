@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-			 x:Class="RealEstateCore.About" 
+			 x:Class="RealEstateCore.AboutPage" 
 			 xmlns:local="clr-namespace:Core;assembly=RealEstateCore">
+	<ContentPage.Padding>
+		<OnPlatform x:TypeArguments="Thickness" iOS="0, 20, 0, 0" WinPhone="20,20,20,20" />
+	</ContentPage.Padding>
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<Style TargetType="Label">
@@ -18,6 +21,10 @@
 		<StackLayout Orientation="Vertical">
 			<Label Text="Created by Sam Williams" FontSize="14" />
 			<Label Text="Icons supplied by: https://icons8.com/web-app/5572/Home" FontSize="14" />
+<!--			<div>Icons made by <a href="http://www.flaticon.com/authors/iconnice" title="Iconnice">Iconnice</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>-->
+<!--			<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>-->
+<!--			<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>-->
+<!--			<div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>-->
 		</StackLayout>
 	</StackLayout>
 </ContentPage>

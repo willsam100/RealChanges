@@ -35,6 +35,7 @@ type Update =
     | RefrehedItems of FullListing list
     | ItemValidated of FullListing option
     | DeletedListing of ListingId
+    | DeletedListingFailed of string
     
 type NavigationDetails = {
     Page: unit -> Page
@@ -76,20 +77,27 @@ module Option =
 type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveListing, validateListing, refreshListings, deleteListing) as this =
 
     let listingValidated item (current: Model) = 
+
         Debug.WriteLine <| sprintf "Listing has been validated"
         match item, current.AddListingModel with 
-        | Some listingItem, Some listingModel -> saveListing listingItem
-                                                 { current with Items = listingItem :: current.Items 
-                                                                AddListingModel = Some { listingModel with 
-                                                                                                        OutputMessage = "Listing saved"; 
-                                                                                                        ItemAdded = true; 
-                                                                                                        IsValidatingItem = false }}
-        | Some listingItem, None -> saveListing listingItem
-                                    { current with Items = listingItem :: current.Items 
-                                                   AddListingModel = Some { EntryText = ""
+        | Some listingItem, Some listingModel -> 
+            listingItem |> saveListing |> function 
+            | Left errorMessage -> {current with AddListingModel = Some {OutputMessage = errorMessage; ItemAdded = false; IsValidatingItem = false; EntryText = ""}}
+            | Right () -> 
+                        { current with Items = listingItem :: current.Items 
+                                       AddListingModel = Some { listingModel with 
                                                                             OutputMessage = "Listing saved"; 
                                                                             ItemAdded = true; 
                                                                             IsValidatingItem = false }}
+        | Some listingItem, None -> 
+            listingItem |> saveListing |> function 
+            | Left errorMessage -> {current with AddListingModel = Some {OutputMessage = errorMessage; ItemAdded = false; IsValidatingItem = false; EntryText = ""}}
+            | Right () -> { current with          Items = listingItem :: current.Items 
+                                                  AddListingModel = Some { EntryText = ""
+                                                                           OutputMessage = "Listing saved"; 
+                                                                           ItemAdded = true; 
+                                                                           IsValidatingItem = false }}
+
         | None, _ -> {current with AddListingModel = Some {OutputMessage = "Failed to find listing"; ItemAdded = false; IsValidatingItem = false; EntryText = ""}}
 
     let handleUpdateItems msg current = 
@@ -109,8 +117,7 @@ type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveList
                 
             {current with Items = filteredItems }
                            
-        | RefrehedItems xs -> xs |> List.iter saveListing
-                              {current with Items = xs @ current.Items; IsRefreshing = false}
+        | RefrehedItems xs -> {current with Items = xs @ current.Items; IsRefreshing = false}
         | ItemSaved -> {current with AddListingModel = None}
         | ItemValidated x -> listingValidated x current
         | DeletedListing listingId -> 
@@ -139,6 +146,7 @@ type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveList
         | About navigationDetails -> processPageChange navigationDetails
                                      {current with CurrentPage = CurrentPage.About}
         | Root -> Debug.WriteLine <| sprintf "Popping to root"
+                  System.GC.Collect () // Android
                   {current with CurrentPage = ListingsPage; ListingChanges = None; AddListingModel = None}
                 
             

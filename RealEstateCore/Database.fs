@@ -20,5 +20,4 @@ type ListingItem() =
 let runMigration path = 
   let connection = new SQLiteConnection(Path.Combine(path, dbName), false)
   connection.CreateTable<ListingItem>() |> ignore
-  
   connection

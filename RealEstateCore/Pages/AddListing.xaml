@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
-		     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-			 x:Class="RealEstateCore.AddListing" 
-			 xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" 
-			 Title="{Binding Title}">
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="RealEstateCore.AddListing" xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" Title="{Binding Title}">
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<Style TargetType="Label">
@@ -16,10 +12,8 @@
 		</ResourceDictionary>
 	</ContentPage.Resources>
 	<StackLayout Orientation="Vertical" HorizontalOptions="Fill">
-		<Entry Margin="20,40,20,5" x:Name="entry" Text="{Binding ListingText}" Placeholder="Trademe Link or Listing #" FontSize="20" TextColor = "Black" />
-		<Button Margin="20,5,20,0" Text="Track" BackgroundColor="#FFD180" FontSize="20" TextColor = "Black" 
-                Command="{Binding TrackCommand}" CommandParameter="{Binding Source={x:Reference entry}, Path=Text}" 
-                HorizontalOptions="Fill" />
-		<Label Margin="20,0,20,0" Text="{Binding Output}" FontSize="30" TextColor = "Black" />
+		<Entry Margin="20,40,20,5" x:Name="entry" Text="{Binding ListingText}" Placeholder="Trademe Link or Listing #" FontSize="20" TextColor="Black" />
+		<Button Margin="20,5,20,0" Text="Track" BackgroundColor="#FFD180" FontSize="20" TextColor="Black" Command="{Binding TrackCommand}" CommandParameter="{Binding Source={x:Reference entry}, Path=Text}" HorizontalOptions="Fill" />
+		<Label Margin="20,0,20,0" Text="{Binding Output}" FontSize="30" TextColor="Black" />
 	</StackLayout>
 </ContentPage>

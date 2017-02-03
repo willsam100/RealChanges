@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
-			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-			 x:Class="RealEstateCore.Listings" 
-			 xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" 
-             xmlns:behaviors="clr-namespace:Corcav.Behaviors;assembly=Corcav.Behaviors" 
-			 Title="Listings"
-			 xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms">
+				xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+				x:Class="RealEstateCore.Listings" 
+				xmlns:local="clr-namespace:RealEstateCore;assembly=RealEstateCore" 
+	            xmlns:behaviors="clr-namespace:Corcav.Behaviors;assembly=Corcav.Behaviors" 
+				Title="Listings"
+				Icon="home"
+				xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms">
 <ContentPage.Resources>
 	<ResourceDictionary>
 		<Style TargetType="Label">
@@ -18,12 +19,9 @@
 	</ResourceDictionary>
 </ContentPage.Resources>
 <ContentPage.ToolbarItems>
-	<ToolbarItem Icon="about" Command="{Binding About}"/>
-	<ToolbarItem Icon="add" Command="{Binding AddListing}"/>
-<!--	<ToolbarItem Text="{Binding toolbarShow}" Command="{Binding ShowRemoved}"/>-->
-	
+	<ToolbarItem Icon="find" Command="{Binding AddListing}"/>
 </ContentPage.ToolbarItems>
-<ListView Margin="0,0,0,0" ItemsSource="{Binding Listings}" HasUnevenRows="True" CachingStrategy="RecycleElement"
+<ListView Margin="0,0,0,0" ItemsSource="{Binding Listings}" HasUnevenRows="True" 
 		  IsPullToRefreshEnabled="True"
 		  RefreshCommand="{Binding Refresh}" IsRefreshing="{Binding IsRefreshing, Mode=OneWay}" BackgroundColor="White">
   	<behaviors:Interaction.Behaviors>

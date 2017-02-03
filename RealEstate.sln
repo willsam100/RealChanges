@@ -13,6 +13,8 @@ Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "RealEstateCore", "RealEstat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstate.iOS", "RealEstate.iOS\RealEstate.iOS.csproj", "{422FFE81-F6F1-4406-B07D-86098D832AA3}"
 EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "RealEstate.Tests", "RealEstate.Tests\RealEstate.Tests.fsproj", "{D394EE77-6410-404F-9900-8303499ED856}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,5 +121,17 @@ Global
 		{422FFE81-F6F1-4406-B07D-86098D832AA3}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{422FFE81-F6F1-4406-B07D-86098D832AA3}.Debug|iPhone.ActiveCfg = Debug|iPhone
 		{422FFE81-F6F1-4406-B07D-86098D832AA3}.Debug|iPhone.Build.0 = Debug|iPhone
+		{D394EE77-6410-404F-9900-8303499ED856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Release|iPhone.Build.0 = Release|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{D394EE77-6410-404F-9900-8303499ED856}.Debug|iPhone.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

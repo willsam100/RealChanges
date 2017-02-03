@@ -86,7 +86,7 @@ let listingChangesComponent source (model: ISignal<Model>) =
      BindingCollection.toView source "Details" listings detailCellComponent |> Observable.map (fun (msg,model) -> msg)
     ]
 
-let listingChangesCell (canExecute: ISignal<bool>) source (model : ISignal<ListingDownloader.FullListing>) = 
+let listingChangesCell interstitial (canExecute: ISignal<bool>) source (model : ISignal<ListingDownloader.FullListing>) = 
                     
     let showAsUpdated: DateTime -> bool = fun d -> (d > (DateTime.Now.AddHours (-24.)))
                     
@@ -99,7 +99,7 @@ let listingChangesCell (canExecute: ISignal<bool>) source (model : ISignal<Listi
     model |> Signal.map (fun v -> v.DateAdded |> showAsUpdated)    |> Binding.toView source "Changed"
     model |> Signal.map (fun v -> v.Image |> urlToString)          |> Binding.toView source "Image"
 
-    let addListingMessage = 
+    let addListingMessage () =
         Msg.RequestAction 
         <| RequestAction.SetListingDetail 
             ({
@@ -109,25 +109,30 @@ let listingChangesCell (canExecute: ISignal<bool>) source (model : ISignal<Listi
 
     Debug.WriteLine <| sprintf "Updating cell: %s %s" model.Value.Listing.Title model.Value.Listing.Price
     [
-     source |> Binding.createMessageChecked "TapCommand" canExecute addListingMessage
+     source |> Binding.createMessageChecked "TapCommand" canExecute (addListingMessage ())
      source |> Binding.createMessageChecked "OnDelete" canExecute (RequestAction <| DeleteListing model.Value.Listing.ListingId)
     ]
         
-let listingsComponent source (model : ISignal<Model>) =    
+let listingsComponent progressShow progressHide interstitial source (model : ISignal<Model>)  =    
 
     Debug.WriteLine <| sprintf "listViewComponent udpated: %A" model
-    let sortedListings = 
-        model
-        |> Signal.map (fun m -> (m.Items, m.ShowRemovedListings))
-        |> Signal.map (fun (listings, showRemovedListings) -> 
-            listings 
-            |> List.toSeq
-            |> Seq.groupBy (fun x -> x.Listing.ListingId)
-            |> Seq.map (fun (x, xs) -> xs |> Seq.sortBy (fun y -> y.DateAdded) |> Seq.last)
-            |> Seq.filter (fun x -> x.Listing.Price <> "Sold" || showRemovedListings)
-            |> Seq.filter (fun x -> x.IsActive = true || showRemovedListings)
-            |> Seq.sortByDescending (fun x -> x.DateAdded)
-            |> Seq.toList )
+
+    let sortedListings m = 
+        m.Items 
+        |> List.toSeq
+        |> Seq.groupBy (fun x -> x.Listing.ListingId)
+        |> Seq.map (fun (x, xs) -> (x, xs |> Seq.sortByDescending (fun y -> y.DateAdded) |> Seq.toList))
+        |> Seq.toList
+
+    let takeFirst (x, xs) = xs |> List.head
+    let takeSecond (x, xs) = xs |> List.skip 1 |> List.head    //(fun y -> match y.Length with | 0 -> xs |> List.head | _ -> y |> List.head)
+
+    let isListingActive (x: ListingDownloader.FullListing) = x.IsActive = true
+
+    let availableListings = List.map takeFirst >> List.filter isListingActive
+    let soldListings = List.filter (fun (x,xs) -> xs |> List.exists (isListingActive >> not)) >> List.map takeSecond
+
+    let getListings filter = model |> Signal.map (sortedListings >> filter)
 
     let listingMessage = 
         Msg.ChangePage <| AddListing {
@@ -137,7 +142,7 @@ let listingsComponent source (model : ISignal<Model>) =
             
     let aboutMessage = 
         Msg.ChangePage <| About {
-                Page = fun () -> new About() :> Page
+                Page = fun () -> new AboutPage() :> Page
                 Navigation = fun (navPage: INavigation) -> navPage.PushAsync
                 Binding = aboutComponet }
             
@@ -145,12 +150,11 @@ let listingsComponent source (model : ISignal<Model>) =
         model 
         |> Signal.map (fun x -> let cp = x.CurrentPage
                                 cp = ListingsPage && (not x.IsRefreshing))
-            
-    sortedListings.Value |> List.iter (fun x -> Debug.WriteLine <| sprintf "Listing %s %s" x.Listing.Title x.Listing.Price)
+
     model |> Signal.map (fun x -> x.IsRefreshing) |> Binding.toView source "IsRefreshing"
     
     let listingChangeMessage (item: ItemTappedEventArgs) = 
-        
+        interstitial () 
         let model = item.Item :?> ModelBindingSource<ListingDownloader.FullListing, RealEstateCore.Msg> |> (fun x -> x.Model.Value)
         Msg.RequestAction 
         <| RequestAction.SetListingDetail 
@@ -158,13 +162,12 @@ let listingsComponent source (model : ISignal<Model>) =
                 Page = fun () -> new ListingChanges() :> Page
                 Navigation = fun (navPage: INavigation) -> navPage.PushAsync
                 Binding = listingChangesComponent }, model.Listing.ListingId )
-                
-    model 
-    |> Signal.map (fun x -> if x.ShowRemovedListings then "Hide Sold" else "Show Sold")
-    |> Binding.toView source "toolbarShow"
 
     [
-        BindingCollection.toView source "Listings" sortedListings (listingChangesCell canChangePage) 
+        BindingCollection.toView source "Listings" (getListings availableListings) (listingChangesCell interstitial canChangePage) 
+        |> Observable.map (fun (msg,model) -> msg)
+
+        BindingCollection.toView source "SoldListings" (getListings soldListings) (listingChangesCell interstitial canChangePage) 
         |> Observable.map (fun (msg,model) -> msg)
         
         source |> Binding.createMessageParamChecked "ItemTapped" canChangePage listingChangeMessage
@@ -176,34 +179,38 @@ let listingsComponent source (model : ISignal<Model>) =
         source |> Binding.createMessage "PoppedCommand" (ChangePage Root)
     ]
 
-let applicationRoot navPage path = 
+let applicationRoot navPage path progressShow progressHide interstitial = 
 
-    let openDb path =  
-        let db = new ApiClient()
-        db.Open(path) 
-        db
-        
-    let db = openDb path
-
+    let dbConn = openConnection path
     let messageSource = ObservableSource<Update>()
 
-    let load = fetchData db messageSource
-    let validate = validateListing messageSource
-    let save = saveItem db Debug.WriteLine
-    let refresh = refreshListings messageSource
-    let delete = deleteListing db messageSource
+    let load = fetchData dbConn messageSource
+    let validate = validateListing logException messageSource
+    let save = saveItem dbConn
+    let refresh = refreshListings logException dbConn messageSource
+    let delete = deleteListing dbConn messageSource
     
     let state = StateManagement(navPage, load, save, validate, refresh, delete)
 
     messageSource
     |> Observable.add (fun msg -> Msg.RequestCompleted msg |> state.Update)
 
-    let app = Framework.application state.ToSignal state.Initlize state.Update listingsComponent
+    let app = Framework.application state.ToSignal state.Initlize state.Update <| listingsComponent progressShow progressHide interstitial
     app
 
 [<CompiledName("CreateApplication")>]
-let createApplication path = 
-    let page = Listings()
-    let nav = new NavigationWithBehaviour(page)
-    let app = applicationRoot nav path
-    Framework.createApplicationInfo app nav
+let createApplication path progressShow progressHide (interstitial: Action) = 
+
+    let nav = Listings() |> NavigationWithBehaviour
+    let tab = TabbedPage(BarTextColor = Color.White)
+    tab.BarTextColor <- Color.White
+    tab.BarBackgroundColor <- Color.Transparent
+
+    nav |> tab.Children.Add
+    let createNavWithTitle x = NavigationPage(x, Title = x.Title)
+
+    SoldListings () |> createNavWithTitle |> tab.Children.Add
+    AboutPage () |> createNavWithTitle |> tab.Children.Add
+
+    let app = applicationRoot nav path progressShow progressHide (fun () -> interstitial.Invoke())
+    Framework.createApplicationInfo app tab
