@@ -60,8 +60,6 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Component1.fs" />
     <Compile Include="Script.fsx" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />

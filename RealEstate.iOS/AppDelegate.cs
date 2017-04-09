@@ -6,8 +6,6 @@ using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 using BigTed;
-using Xamarinos.AdMob.Forms.iOS;
-using Xamarinos.AdMob.Forms;
 
 namespace RealEstate.iOS
 {
@@ -16,14 +14,6 @@ namespace RealEstate.iOS
 	[Register("AppDelegate")]
 	public class AppDelegate : FormsApplicationDelegate
 	{
-		private void InitilizeAdMod()
-		{
-			AdBannerRenderer.Init();
-
-			var adMobKey = "";
-			CrossAdmobManager.Init(adMobKey);
-		}
-
 		public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
 		{
 			var personalFolder = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
@@ -35,12 +25,8 @@ namespace RealEstate.iOS
 			Action<string> show = message => BTProgressHUD.Show(message);
 			Action hide = BTProgressHUD.Dismiss;
 
-			InitilizeAdMod();
-			Action interstitial = () => CrossAdmobManager.Current.Show();
-
-
 			Forms.Init();
-			var info = RealEstateCore.RealEstate.CreateApplication(path, show, hide, interstitial);
+			var info = RealEstateCore.RealEstate.CreateApplication(path, show, hide);
 
 			LoadApplication(info.CreateApp());
 			return base.FinishedLaunching(uiApplication, launchOptions);

@@ -1,4 +1,4 @@
-﻿namespace RealEstateCore
+namespace RealEstateCore
 open System.Diagnostics
 open System.Threading.Tasks
 open Xamarin.Forms
@@ -6,6 +6,19 @@ open ListingDownloader
 open Gjallarhorn
 open Gjallarhorn.Bindable
 open Gjallarhorn.XamarinForms
+
+module Option = 
+
+    let optionOr left right = 
+        match (left, right) with 
+            | Some a, Some b -> Some a
+            | Some a, None ->   Some a
+            | None, Some a ->   Some a
+            | None, None ->     None 
+
+    let (.||) l r = optionOr l r
+
+open Option 
 
 type AddListingModel = {
     OutputMessage: string
@@ -45,7 +58,7 @@ type NavigationDetails = {
 
 and RequestAction = 
     | RequstLoad
-    | RequstRefresh
+    | RequestRefresh
     | AddListingMessage of string
     | SetListingDetail of (NavigationDetails * ListingId)
     | DeleteListing of ListingId
@@ -62,19 +75,9 @@ and Msg =
     | RequestCompleted of Update
     | ChangePage of ChangePage
     | Loop
-    
-module Option = 
+     
 
-    let optionOr left right = 
-        match (left, right) with 
-            | Some a, Some b -> Some a
-            | Some a, None ->   Some a
-            | None, Some a ->   Some a
-            | None, None ->     None 
-            
-            
-
-type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveListing, validateListing, refreshListings, deleteListing) as this =
+type StateManagement (navPage: NavigationPage, loadItemsInBackground: unit -> unit, saveListing, validateListingInBackground, refreshListings, deleteListingInBackground) as this =
 
     let listingValidated item (current: Model) = 
 
@@ -110,7 +113,7 @@ type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveList
                 |> List.map (fun x -> xs |> List.find (fun y -> y.Listing = x))
                 |> List.toSeq
                 |> Seq.groupBy (fun x -> x.Listing.ListingId)
-                |> Seq.map (fun (key, xs) -> let image = xs |> Seq.fold (fun image x -> Option.optionOr image x.Image ) None
+                |> Seq.map (fun (key, xs) -> let image = xs |> Seq.fold (fun image x -> image .|| x.Image ) None
                                              xs |> Seq.map (fun x -> {x with Image = image} ) )
                 |> Seq.concat 
                 |> Seq.toList
@@ -120,11 +123,11 @@ type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveList
         | RefrehedItems xs -> {current with Items = xs @ current.Items; IsRefreshing = false}
         | ItemSaved -> {current with AddListingModel = None}
         | ItemValidated x -> listingValidated x current
+        | DeletedListingFailed listingId -> Debug.WriteLine <| sprintf "Listing deleted: %s" listingId; current
         | DeletedListing listingId -> 
             Debug.WriteLine <| sprintf "Listing deleted: %A" listingId
             {current with Items = current.Items |> List.filter (fun x -> x.Listing.ListingId <> listingId) }
             
-
     let processPageChange navigationDetails = 
         let app = Framework.application this.ToSignal (fun () -> ()) this.Update navigationDetails.Binding
         Framework.changePage (navigationDetails.Navigation navPage.Navigation) app (navigationDetails.Page ())
@@ -148,27 +151,25 @@ type StateManagement (navPage: NavigationPage, loadItems: unit -> unit, saveList
         | Root -> Debug.WriteLine <| sprintf "Popping to root"
                   System.GC.Collect () // Android
                   {current with CurrentPage = ListingsPage; ListingChanges = None; AddListingModel = None}
-                
-            
+
     let requestAction msg current = 
         match msg with 
-        | RequstLoad    -> loadItems() |> ignore
+        | RequstLoad    -> loadItemsInBackground() |> ignore
                            current
-        | RequstRefresh -> refreshListings current.Items
-                           {current with IsRefreshing = true}
-        | AddListingMessage x ->  validateListing x
+        | RequestRefresh -> refreshListings current.Items
+                            {current with IsRefreshing = true}
+        | AddListingMessage x ->  validateListingInBackground x
                                   {current with AddListingModel = Some {OutputMessage = "Loading..."; ItemAdded = false; IsValidatingItem = true; EntryText = x}}
-        | SetListingDetail  (navDetails, listingId) -> 
-            let current = {current with ListingChanges = Some listingId}
-            async { ListingDetail navDetails |> Msg.ChangePage |> this.Update } |> Async.Start
-            current
+        | SetListingDetail  (navDetails, listingId) -> {current with ListingChanges = Some listingId} |> handleChangePage (ListingDetail navDetails)
         | DeleteListing listingId -> 
-                                     current.Items |> List.filter (fun x -> x.Listing.ListingId = listingId) |> deleteListing <| listingId
+                                     current.Items |> List.filter (fun x -> x.Listing.ListingId = listingId) |> deleteListingInBackground <| listingId
                                      current
         | ToggleShowRemoved -> {current with ShowRemovedListings = not current.ShowRemovedListings }
                                 
             
     let update (msg : Msg) (current : Model) = 
+        let { ListingChanges = detailListingId } = current
+        Debug.WriteLine <| sprintf "Update message: %A, current item: %A" msg detailListingId
         match msg with
         | Msg.RequestAction m -> requestAction m current
         | Msg.RequestCompleted u -> handleUpdateItems u current

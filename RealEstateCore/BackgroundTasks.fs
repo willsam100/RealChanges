@@ -50,7 +50,7 @@ let getListingItems (c: SQLiteConnection) =
                                     IsActive = x.IsActive
                                 }) )
         |> Seq.toList 
-        |> List.map (fun x -> Debug.WriteLine <| sprintf "Loaded listing: %A" x ; x)
+        //|> List.map (fun x -> Debug.WriteLine <| sprintf "Loaded listing: %A" x ; x)
 
 let saveItem (c: SQLiteConnection) (value: FullListing) = 
     dbCatch "Loading listings" <| fun () -> 
@@ -80,8 +80,8 @@ let deleteListingRecord (c: SQLiteConnection) (value: FullListing) =
 let openConnection (path: string) =
   runMigration path
 
-let private foldErrors result x = 
-    match x with 
+let private foldErrors result = 
+    function
     | Right x -> result
     | Left x -> Some x
 
