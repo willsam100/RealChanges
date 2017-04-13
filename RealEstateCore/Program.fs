@@ -105,7 +105,7 @@ let listingChangesCell (canExecute: ISignal<bool>) source (model : ISignal<Listi
 
     Debug.WriteLine <| sprintf "Updating cell: %s %s" model.Value.Listing.Title model.Value.Listing.Price
     [
-     source |> Binding.createMessageChecked "OnDelete" canExecute (RequestAction <| DeleteListing model.Value.Listing.ListingId)
+     source |> Binding.createMessage "OnDelete" (RequestAction <| DeleteListing model.Value.Listing.ListingId)
     ]
         
 let listingsComponent progressShow progressHide source (model : ISignal<Model>)  =    
