@@ -14,7 +14,7 @@ let addListing source (model: ISignal<Model>) =
     model 
     |> Signal.map (fun x -> x.AddListingModel)
     |> Signal.map (fun x -> x |> Option.map (fun y -> y.OutputMessage) |> defaultArg <| "")
-    //|> (fun x -> Debug.WriteLine <| sprintf "Output: %A" x.Value; x)
+    |> (fun x -> Debug.WriteLine <| sprintf "Output: %A" x.Value; x)
     |> Binding.toView source "Output"
                             
     Signal.constant "Add Trademe Listing!" |> Binding.toView source "Title" 
@@ -34,7 +34,6 @@ let addListing source (model: ISignal<Model>) =
                                       cp = AddListingPage)
     let canExecute = Signal.map2 (&&) isNotLoadingContent isOnAddListingPage
 
-    //Debug.WriteLine <| sprintf "Not Loading %b, page %A " isNotLoadingContent.Value model.Value.CurrentPage
     [source |> Binding.createMessageParamChecked "TrackCommand" canExecute (fun entry -> RequestAction <| AddListingMessage entry)]
 
 
@@ -45,7 +44,7 @@ let detailCellComponent source (model : ISignal<ListingDownloader.FullListing>) 
     model |> Signal.map (fun v -> v.Views |> sprintf "Views: %d") |> Binding.toView source "Views"
 
     [
-        //source |> Binding.createMessage "PoppedCommand" (ChangePage Root)
+        source |> Binding.createMessage "PoppedCommand" (ChangePage Root)
     ]
 
 let listingChangesComponent source (model: ISignal<Model>) = 
@@ -54,7 +53,7 @@ let listingChangesComponent source (model: ISignal<Model>) =
         |> Signal.map (fun x -> x.ListingChanges )
         |> Signal.map (fun x -> defaultArg x (ListingDownloader.TradeMe ""))
     
-    //Debug.WriteLine <| sprintf "ListingId %A" listingId.Value 
+    Debug.WriteLine <| sprintf "ListingId %A" listingId.Value 
     
     let listings  = 
         model
@@ -110,7 +109,7 @@ let listingChangesCell (canExecute: ISignal<bool>) source (model : ISignal<Listi
         
 let listingsComponent progressShow progressHide source (model : ISignal<Model>)  =    
 
-    //Debug.WriteLine <| sprintf "listViewComponent updated: %A" model
+    Debug.WriteLine <| sprintf "listViewComponent updated: %A" model
 
     let sortedListings m = 
         m.Items 
@@ -162,8 +161,8 @@ let listingsComponent progressShow progressHide source (model : ISignal<Model>) 
         BindingCollection.toView source "Listings" (getListings availableListings) (listingChangesCell canChangePage) 
         |> Observable.map (fun (msg,model) -> msg)
 
-        //BindingCollection.toView source "SoldListings" (getListings soldListings) (listingChangesCell canChangePage) 
-        //|> Observable.map (fun (msg,model) -> msg)
+        BindingCollection.toView source "SoldListings" (getListings soldListings) (listingChangesCell canChangePage) 
+        |> Observable.map (fun (msg,model) -> msg)
         
         source |> Binding.createMessageParamChecked "ItemTapped" canChangePage listingChangeMessage
         source |> Binding.createMessageChecked "AddListing" canChangePage (Msg.ChangePage toListingPage)

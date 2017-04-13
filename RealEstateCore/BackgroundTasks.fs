@@ -50,7 +50,7 @@ let getListingItems (c: SQLiteConnection) =
                                     IsActive = x.IsActive
                                 }) )
         |> Seq.toList 
-        //|> List.map (fun x -> Debug.WriteLine <| sprintf "Loaded listing: %A" x ; x)
+        |> List.map (fun x -> Debug.WriteLine <| sprintf "Loaded listing: %A" x ; x)
 
 let saveItem (c: SQLiteConnection) (value: FullListing) = 
     dbCatch "Loading listings" <| fun () -> 
